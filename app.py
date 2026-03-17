@@ -1,39 +1,74 @@
 import streamlit as st
 from main import run_system
 
-st.set_page_config(page_title="Agentic AI Chatbot")
+st.set_page_config(page_title="AI Diagnosis Chatbot")
 
-st.title("🧠 AI Diagnosis Chatbot")
-st.warning("⚠️ For education only. Not real medical advice.")
+st.title("🧠 Interactive Diagnosis Chatbot")
+st.warning("⚠️ Educational use only")
+
+# Session state
+if "step" not in st.session_state:
+    st.session_state.step = 0
+    st.session_state.symptoms = ""
+    st.session_state.vitals = {}
+    st.session_state.labs = {}
 
 # Chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display old messages
+# Display chat
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# User input
-user_input = st.chat_input("Enter symptoms or updates...")
+# Input
+user_input = st.chat_input("Type your response...")
 
 if user_input:
+
     # Show user message
     st.session_state.messages.append({"role": "user", "content": user_input})
 
     with st.chat_message("user"):
         st.write(user_input)
 
-    # Simple parsing (you can improve later)
-    vitals = {"spo2": 95, "temperature": 37}
-    labs = {"wbc": 8000, "d_dimer": "normal"}
+    # STEP LOGIC
+    if st.session_state.step == 0:
+        st.session_state.symptoms = user_input
+        reply = "Do you have breathlessness? (yes/no)"
+        st.session_state.step = 1
 
-    # Run your AI system
-    result = run_system(user_input, vitals, labs)
+    elif st.session_state.step == 1:
+        reply = "Enter SpO2 value (e.g., 92)"
+        st.session_state.step = 2
 
-    # Format response
-    response = f"""
+    elif st.session_state.step == 2:
+        st.session_state.vitals["spo2"] = int(user_input)
+        reply = "Enter temperature (°C)"
+        st.session_state.step = 3
+
+    elif st.session_state.step == 3:
+        st.session_state.vitals["temperature"] = float(user_input)
+        reply = "Enter WBC count"
+        st.session_state.step = 4
+
+    elif st.session_state.step == 4:
+        st.session_state.labs["wbc"] = int(user_input)
+        reply = "Enter D-dimer (normal/high)"
+        st.session_state.step = 5
+
+    elif st.session_state.step == 5:
+        st.session_state.labs["d_dimer"] = user_input
+
+        # 🔥 Run AI system
+        result = run_system(
+            st.session_state.symptoms,
+            st.session_state.vitals,
+            st.session_state.labs
+        )
+
+        reply = f"""
 ### 🧾 Diagnosis Result
 
 **Confidence:**
@@ -49,8 +84,10 @@ if user_input:
 {result['bias']}
 """
 
-    # Show bot response
-    with st.chat_message("assistant"):
-        st.markdown(response)
+        st.session_state.step = 0  # restart
 
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    # Show bot reply
+    with st.chat_message("assistant"):
+        st.markdown(reply)
+
+    st.session_state.messages.append({"role": "assistant", "content": reply})
