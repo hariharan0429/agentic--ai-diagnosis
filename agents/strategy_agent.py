@@ -1,10 +1,14 @@
-class RevisionAgent:
-    def run(self, hypotheses, evidence_for, evidence_against):
-        updated = {}
+class StrategyAgent:
+    def run(self, confidence):
+        if not confidence:
+            return "Add more symptoms"
 
-        for d, score in hypotheses.items():
-            score += 0.1 * len(evidence_for[d])
-            score -= 0.1 * len(evidence_against[d])
-            updated[d] = max(0, min(score, 1))
+        top = max(confidence, key=confidence.get)
 
-        return updated
+        if top == "Pneumonia":
+            return "Next step: Chest X-ray"
+
+        if top == "Pulmonary Embolism":
+            return "Next step: CT scan / D-dimer"
+
+        return "Ask more details"
