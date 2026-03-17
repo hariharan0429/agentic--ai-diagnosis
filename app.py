@@ -1,41 +1,56 @@
 import streamlit as st
 from main import run_system
 
-st.set_page_config(page_title="Agentic AI Diagnosis Tutor")
+st.set_page_config(page_title="Agentic AI Chatbot")
 
-st.title("🧠 Agentic AI Differential Diagnosis Tutor")
-st.warning("⚠️ This system is for medical education only. Not for real diagnosis.")
+st.title("🧠 AI Diagnosis Chatbot")
+st.warning("⚠️ For education only. Not real medical advice.")
 
-symptoms = st.text_input("Enter symptoms (comma separated)")
+# Chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-col1, col2 = st.columns(2)
+# Display old messages
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-with col1:
-    spo2 = st.number_input("SpO2 (%)", value=98)
-    temp = st.number_input("Temperature (°C)", value=37)
+# User input
+user_input = st.chat_input("Enter symptoms or updates...")
 
-with col2:
-    wbc = st.number_input("WBC count", value=8000)
-    d_dimer = st.selectbox("D-Dimer", ["normal", "high"])
+if user_input:
+    # Show user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
 
-if st.button("Run Diagnosis"):
-    result = run_system(
-        symptoms,
-        {"spo2": spo2, "temperature": temp},
-        {"wbc": wbc, "d_dimer": d_dimer}
-    )
+    with st.chat_message("user"):
+        st.write(user_input)
 
-    st.subheader("📊 Confidence Levels")
-    st.json(result["confidence"])
+    # Simple parsing (you can improve later)
+    vitals = {"spo2": 95, "temperature": 37}
+    labs = {"wbc": 8000, "d_dimer": "normal"}
 
-    st.subheader("✅ Evidence For")
-    st.json(result["evidence_for"])
+    # Run your AI system
+    result = run_system(user_input, vitals, labs)
 
-    st.subheader("❌ Evidence Against")
-    st.json(result["evidence_against"])
+    # Format response
+    response = f"""
+### 🧾 Diagnosis Result
 
-    st.subheader("➡️ Next Step")
-    st.success(result["next_step"])
+**Confidence:**
+{result['confidence']}
 
-    st.subheader("⚠️ Bias Check")
-    st.info(result["bias"])
+**Evidence For:**
+{result['evidence_for']}
+
+**Next Step:**
+{result['next_step']}
+
+**Bias Check:**
+{result['bias']}
+"""
+
+    # Show bot response
+    with st.chat_message("assistant"):
+        st.markdown(response)
+
+    st.session_state.messages.append({"role": "assistant", "content": response})
