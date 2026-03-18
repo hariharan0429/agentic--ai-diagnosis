@@ -1,33 +1,32 @@
-from agents.symptom_agent import SymptomAgent
-from agents.hypothesis_agent import HypothesisAgent
-from agents.evidence_agent import EvidenceAgent
-from agents.revision_agent import RevisionAgent
-from agents.strategy_agent import StrategyAgent
-from agents.bias_agent import BiasAgent
+from backend.rag_engine import RAG
+from backend.llm_engine import generate_reasoning
 
-def run_system(symptoms_text, vitals, labs):
-    sym = SymptomAgent()
-    hyp = HypothesisAgent()
-    evi = EvidenceAgent()
-    rev = RevisionAgent()
-    strat = StrategyAgent()
-    bias = BiasAgent()
+rag = RAG()
 
-    symptoms = sym.run(symptoms_text)
-    hypotheses = hyp.run(symptoms)
+def run_system(user_input):
 
-    evidence_for, evidence_against = evi.run(hypotheses, vitals, labs)
-    confidence = rev.run(hypotheses, evidence_for, evidence_against)
+    symptoms = [s.strip().lower() for s in user_input.split(",")]
 
-    next_step = strat.run(confidence)
-    bias_check = bias.run(confidence)
+    diseases = rag.retrieve(symptoms)
+
+    confidence = {}
+    evidence = {}
+
+    for d in diseases:
+        match = len(set(symptoms) & set(d["symptoms"]))
+        conf = round(match / len(d["symptoms"]), 2)
+
+        confidence[d["disease"]] = conf
+        evidence[d["disease"]] = {
+            "matched_symptoms": list(set(symptoms) & set(d["symptoms"]))
+        }
+
+    reasoning = generate_reasoning(diseases)
 
     return {
-        "symptoms": symptoms,
-        "hypotheses": hypotheses,
+        "input_symptoms": symptoms,
         "confidence": confidence,
-        "evidence_for": evidence_for,
-        "evidence_against": evidence_against,
-        "next_step": next_step,
-        "bias": bias_check
+        "evidence": evidence,
+        "next_step": diseases[0]["next_step"] if diseases else "More data needed",
+        "reasoning": reasoning
     }
