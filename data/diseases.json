@@ -1,0 +1,92 @@
+[
+  {
+    "disease": "Pneumonia",
+    "symptoms": ["fever", "cough", "shortness of breath", "low spo2"],
+    "labs": ["high wbc"],
+    "next_step": "Chest X-ray"
+  },
+  {
+    "disease": "Pulmonary Embolism",
+    "symptoms": ["chest pain", "breathlessness", "low spo2"],
+    "labs": ["high d-dimer"],
+    "next_step": "CT Pulmonary Angiography"
+  },
+  {
+    "disease": "Asthma",
+    "symptoms": ["wheezing", "shortness of breath", "chest tightness"],
+    "labs": ["normal"],
+    "next_step": "Spirometry"
+  },
+  {
+    "disease": "Tuberculosis",
+    "symptoms": ["chronic cough", "weight loss", "night sweats"],
+    "labs": ["positive sputum"],
+    "next_step": "Sputum test"
+  },
+  {
+    "disease": "COVID-19",
+    "symptoms": ["fever", "cough", "loss of smell"],
+    "labs": ["positive pcr"],
+    "next_step": "PCR test"
+  },
+  {
+    "disease": "Bronchitis",
+    "symptoms": ["cough", "mucus", "fatigue"],
+    "labs": ["normal"],
+    "next_step": "Clinical exam"
+  },
+  {
+    "disease": "Heart Attack",
+    "symptoms": ["chest pain", "sweating", "nausea"],
+    "labs": ["high troponin"],
+    "next_step": "ECG"
+  },
+  {
+    "disease": "Anemia",
+    "symptoms": ["fatigue", "pale skin", "dizziness"],
+    "labs": ["low hemoglobin"],
+    "next_step": "CBC test"
+  },
+  {
+    "disease": "Diabetes",
+    "symptoms": ["frequent urination", "thirst", "fatigue"],
+    "labs": ["high glucose"],
+    "next_step": "Blood sugar test"
+  },
+  {
+    "disease": "Hypertension",
+    "symptoms": ["headache", "dizziness"],
+    "labs": ["high bp"],
+    "next_step": "BP monitoring"
+  },
+  {
+    "disease": "Dengue",
+    "symptoms": ["fever", "rash", "joint pain"],
+    "labs": ["low platelets"],
+    "next_step": "NS1 test"
+  },
+  {
+    "disease": "Malaria",
+    "symptoms": ["fever", "chills", "sweating"],
+    "labs": ["positive smear"],
+    "next_step": "Blood smear"
+  },
+  {
+    "disease": "Appendicitis",
+    "symptoms": ["abdominal pain", "nausea", "fever"],
+    "labs": ["high wbc"],
+    "next_step": "Ultrasound"
+  },
+  {
+    "disease": "Migraine",
+    "symptoms": ["headache", "nausea", "sensitivity to light"],
+    "labs": ["normal"],
+    "next_step": "Neurological exam"
+  },
+  {
+    "disease": "Flu",
+    "symptoms": ["fever", "cough", "body pain"],
+    "labs": ["normal"],
+    "next_step": "Rest and hydration"
+  }
+]
