@@ -1,27 +1,17 @@
-import os
-from sentence_transformers import SentenceTransformer
-import numpy as np
+import json
 
-class MedicalRAG:
+class RAG:
     def __init__(self):
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.documents = []
-        self.embeddings = []
-        self.load_knowledge()
+        with open("data/diseases.json", "r") as f:
+            self.data = json.load(f)
 
-    def load_knowledge(self):
-        folder = "medical_knowledge"
-        for file in os.listdir(folder):
-            if file.endswith(".txt"):
-                with open(os.path.join(folder, file), "r") as f:
-                    text = f.read()
-                    self.documents.append(text)
+    def retrieve(self, user_symptoms):
+        results = []
 
-        self.embeddings = self.model.encode(self.documents)
+        for item in self.data:
+            score = len(set(user_symptoms) & set(item["symptoms"]))
+            if score > 0:
+                results.append((item, score))
 
-    def query(self, query_text):
-        query_embedding = self.model.encode([query_text])[0]
-        scores = np.dot(self.embeddings, query_embedding)
-
-        best_idx = int(np.argmax(scores))
-        return self.documents[best_idx]
+        results.sort(key=lambda x: x[1], reverse=True)
+        return [r[0] for r in results[:3]]
